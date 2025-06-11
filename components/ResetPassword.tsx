@@ -1,17 +1,27 @@
 "use client";
 import React, { useState } from "react";
 import AuthButton from "./AuthButton";
-// import { useRouter, useSearchParams } from "next/navigation";
+import { resetPassword } from "@/actions/auth";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const ResetPassword = () => {
-  // const searchParams = useSearchParams();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
-  // const router = useRouter();
+  const router = useRouter();
   const [loading, setLoading] = useState<boolean>(false);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
+
+    const formData = new FormData(event.currentTarget);
+    const result = await resetPassword(
+      formData,
+      searchParams.get("code") as string );
+    if (result.status === "success") {
+      router.push("/");
+    }else {
+      setError(result.status);}
 
     setLoading(false);
   };
@@ -24,9 +34,9 @@ const ResetPassword = () => {
           </label>
           <input
             type="password"
-            placeholder="Password"
-            id="Password"
-            name="password"
+            placeholder="New Password"
+            id="newPassword"
+            name="newPassword"
             className="mt-1 w-full px-4 p-2  h-10 rounded-md border border-gray-200 bg-white text-sm text-gray-700"
           />
         </div>
